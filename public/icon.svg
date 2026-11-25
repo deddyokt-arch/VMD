@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="coffeeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451A03"/>
+      <stop offset="50%" stop-color="#2D150A"/>
+      <stop offset="100%" stop-color="#190A04"/>
+    </linearGradient>
+    <linearGradient id="amberGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="creamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Squircle with safe zone -->
+  <rect width="512" height="512" rx="112" fill="url(#coffeeGrad)"/>
+  
+  <!-- Subtle inner border ring -->
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#D97706" stroke-width="4" stroke-opacity="0.3"/>
+  
+  <!-- Steam lines -->
+  <path d="M190 140 Q205 105 190 75 Q175 45 195 25" fill="none" stroke="url(#creamGrad)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+  <path d="M256 125 Q275 90 256 60 Q240 30 260 15" fill="none" stroke="url(#amberGold)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M322 140 Q335 105 322 75 Q305 45 325 25" fill="none" stroke="url(#creamGrad)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+  
+  <!-- Coffee Cup Body -->
+  <path d="M128 175 H384 L360 355 C355 395 320 425 280 425 H232 C192 425 157 395 152 355 Z" fill="#FAF5EE"/>
+  
+  <!-- Cup Handle -->
+  <path d="M375 210 H410 C435 210 455 230 455 255 C455 280 435 300 410 300 H368" fill="none" stroke="#FAF5EE" stroke-width="26" stroke-linecap="round"/>
+  
+  <!-- Saucer plate -->
+  <ellipse cx="256" cy="440" rx="160" ry="24" fill="url(#amberGold)"/>
+  
+  <!-- Coffee Bean & POS glyph inside cup -->
+  <ellipse cx="256" cy="270" rx="42" ry="54" fill="#3E1A0E" transform="rotate(-20 256 270)"/>
+  <path d="M246 220 Q266 270 246 320" fill="none" stroke="url(#amberGold)" stroke-width="7" stroke-linecap="round"/>
+  
+  <!-- POS Receipt / Lightning accent -->
+  <path d="M200 330 H312" stroke="#D97706" stroke-width="6" stroke-linecap="round"/>
+  <path d="M220 350 H292" stroke="#D97706" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+</svg>

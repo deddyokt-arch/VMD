@@ -1,0 +1,788 @@
+MASTER PROMPT: PEMBUATAN APLIKASI KASIR CAFE TERINTEGRASI
+NAMA PROYEK
+
+VaiCafe — Aplikasi Kasir Cafe, Manajemen Stok, Pembukuan, dan Laporan Keuangan Terintegrasi.
+
+1. PERAN ANDA
+
+Bertindak sebagai Senior Full-Stack Developer, Software Architect, UI/UX Designer, Database Engineer, dan Android Application Developer.
+
+Bangun aplikasi kasir kafe yang benar-benar berfungsi, ringan, cepat, aman, mudah digunakan, dan siap dikembangkan menjadi aplikasi Android APK serta aplikasi Windows.
+
+Jangan hanya membuat mockup, desain dashboard, atau halaman statis. Implementasikan semua fitur dengan alur kerja nyata, validasi, penyimpanan database, pengelolaan hak akses, dan penanganan kesalahan.
+
+Semua tombol harus berfungsi. Semua formulir harus dapat menyimpan data. Semua transaksi harus masuk ke database. Semua laporan harus dihitung dari data transaksi sebenarnya.
+
+Jika ada fitur yang memerlukan kredensial pihak ketiga, buat integrasi yang siap dikonfigurasi dan tampilkan statusnya secara jujur. Jangan membuat transaksi pembayaran palsu seolah-olah berhasil.
+
+2. TUJUAN APLIKASI
+
+Buat aplikasi POS (Point of Sale) khusus usaha kafe, kedai kopi, restoran kecil, dan usaha minuman/makanan.
+
+Aplikasi harus:
+
+Memiliki dua peran utama: ADMIN dan KASIR.
+Menggunakan Google Spreadsheet sebagai database yang dapat dibuat otomatis melalui proses setup pertama.
+Memungkinkan seluruh data operasional dimasukkan melalui aplikasi.
+Mendukung unggah foto menu, harga, kategori, stok, barcode, dan informasi produk.
+Mendukung pembayaran tunai, QRIS, debit/kredit jika tersedia melalui penyedia pembayaran, dan metode pembayaran lainnya.
+Memiliki pembukuan otomatis, laporan penjualan, laporan laba rugi, stok, dan riwayat transaksi.
+Dapat digunakan pada HP Android, tablet, laptop, dan PC Windows.
+Memiliki mode offline terbatas dengan sinkronisasi ketika internet kembali tersedia.
+Memiliki desain responsif dan antarmuka berbahasa Indonesia.
+Menggunakan format mata uang Rupiah (IDR), tanggal Indonesia, dan zona waktu Asia/Jakarta.
+3. ARSITEKTUR DAN TEKNOLOGI
+
+Gunakan arsitektur modular yang mudah dirawat dan dikembangkan.
+
+Frontend:
+
+React dengan TypeScript.
+Vite untuk build aplikasi web yang ringan.
+Tailwind CSS atau sistem styling ringan.
+PWA (Progressive Web App) agar aplikasi dapat dipasang pada perangkat yang mendukung.
+IndexedDB untuk cache lokal dan antrean transaksi offline.
+Service Worker untuk aset aplikasi offline.
+Kamera perangkat untuk scan barcode dan QR jika didukung.
+
+Backend:
+
+Google Apps Script sebagai backend/API yang terhubung ke Google Spreadsheet.
+Google Drive untuk penyimpanan foto menu dan aset yang diunggah.
+Google Sheets sebagai database operasional.
+API menggunakan format JSON dengan validasi input dan respons error yang konsisten.
+Gunakan autentikasi yang benar, pemeriksaan hak akses di sisi server, dan pencatatan aktivitas.
+
+Database:
+
+Buat satu file Google Spreadsheet khusus untuk setiap bisnis saat proses setup pertama.
+Buat seluruh sheet, header kolom, konfigurasi awal, dan indeks pencarian yang diperlukan secara otomatis.
+Simpan spreadsheet ID dan konfigurasi koneksi secara aman.
+Setelah setup selesai, aplikasi langsung dapat digunakan tanpa pengguna harus membuat tabel atau sheet secara manual.
+Sediakan tombol sinkronisasi dan pemeriksaan koneksi database.
+
+Jangan menaruh API key, password, token pembayaran, atau rahasia server dalam kode frontend.
+
+Gunakan Google Apps Script dengan otorisasi dan deployment yang sesuai. Jangan mengandalkan URL API yang terbuka tanpa autentikasi dan otorisasi yang memadai.
+
+Jika penggunaan Google Sheets menimbulkan keterbatasan konkurensi, kuota, atau transaksi atomik, rancang mekanisme penguncian, idempotensi, antrean, dan pencatatan transaksi yang konsisten.
+
+4. SETUP OTOMATIS DATABASE
+
+Buat wizard setup pertama dengan langkah berikut:
+
+Pengguna membuka aplikasi untuk pertama kali.
+Tampilkan halaman konfigurasi bisnis.
+Pengguna mengisi:
+Nama kafe.
+Nama pemilik.
+Alamat kafe.
+Nomor telepon.
+Email bisnis.
+Mata uang.
+Zona waktu.
+Logo kafe.
+Pengaturan pajak dan service charge.
+Admin menghubungkan akun Google atau memberikan otorisasi yang diperlukan untuk membuat Spreadsheet dan folder Google Drive.
+Backend membuat Google Spreadsheet baru secara otomatis.
+Buat semua sheet yang diperlukan.
+Buat folder Drive untuk foto menu, logo, dan dokumen pendukung.
+Simpan ID dan konfigurasi integrasi secara aman.
+Buat akun Admin pertama melalui proses setup yang aman.
+Tampilkan hasil pemeriksaan database, penyimpanan foto, dan koneksi backend.
+Tampilkan tombol "Mulai Menggunakan Aplikasi".
+
+Sediakan fitur backup, ekspor, dan pemulihan data dengan validasi agar tidak terjadi duplikasi atau kehilangan transaksi.
+
+Jangan meminta pengguna menyalin data produk secara manual ke Spreadsheet. Semua pengelolaan data dilakukan dari aplikasi.
+
+5. STRUKTUR GOOGLE SPREADSHEET
+
+Buat sheet berikut secara otomatis.
+
+A. SETTINGS
+
+Kolom: setting_key, setting_value, updated_at.
+
+B. USERS
+
+Kolom: user_id, username, password_hash, full_name, role, active, pin_hash, created_at, last_login.
+
+Password harus disimpan sebagai hash yang aman, bukan plaintext. Gunakan mekanisme autentikasi yang sesuai dan jangan menganggap spreadsheet sebagai tempat penyimpanan rahasia yang aman.
+
+C. CATEGORIES
+
+Kolom: category_id, category_name, description, image_url, active, sort_order, created_at.
+
+D. PRODUCTS
+
+Kolom: product_id, sku, barcode, product_name, category_id, description, image_url, selling_price, cost_price, stock_type, stock_qty, minimum_stock, unit, active, created_at, updated_at.
+
+E. PRODUCT_VARIANTS
+
+Kolom: variant_id, product_id, variant_name, additional_price, sku, barcode, active.
+
+F. RECIPES
+
+Kolom: recipe_id, product_id, ingredient_id, quantity_used, unit, created_at.
+
+G. INGREDIENTS
+
+Kolom: ingredient_id, ingredient_name, unit, stock_qty, minimum_stock, cost_per_unit, supplier_id, updated_at.
+
+H. TRANSACTIONS
+
+Kolom: transaction_id, invoice_number, business_date, cashier_id, subtotal, discount, tax, service_charge, total, paid_amount, change_amount, payment_method, payment_status, transaction_status, notes, created_at, synced_at.
+
+I. TRANSACTION_ITEMS
+
+Kolom: item_id, transaction_id, product_id, product_name_snapshot, sku_snapshot, quantity, unit_price, discount, tax, cost_snapshot, line_total, notes, variant_snapshot.
+
+J. PAYMENTS
+
+Kolom: payment_id, transaction_id, provider, payment_method, amount, external_reference, provider_status, paid_at, verified_by, idempotency_key, created_at.
+
+K. EXPENSES
+
+Kolom: expense_id, expense_date, category, description, amount, payment_method, receipt_url, created_by, created_at.
+
+L. PURCHASES
+
+Kolom: purchase_id, purchase_number, supplier_id, purchase_date, subtotal, discount, total, payment_status, notes, created_by.
+
+M. PURCHASE_ITEMS
+
+Kolom: purchase_item_id, purchase_id, ingredient_id, product_id, quantity, unit_cost, line_total.
+
+N. STOCK_MOVEMENTS
+
+Kolom: movement_id, movement_date, item_type, item_id, movement_type, quantity_in, quantity_out, balance_after, reference_id, notes, created_by.
+
+O. SUPPLIERS
+
+Kolom: supplier_id, supplier_name, phone, address, email, notes, active.
+
+P. CASH_SESSIONS
+
+Kolom: session_id, cashier_id, opening_time, opening_cash, closing_time, expected_cash, actual_cash, cash_difference, status, notes.
+
+Q. CASH_MOVEMENTS
+
+Kolom: movement_id, session_id, movement_type, amount, description, created_by, created_at.
+
+R. AUDIT_LOG
+
+Kolom: log_id, user_id, action, entity_type, entity_id, timestamp, details.
+
+S. DAILY_SUMMARY
+
+Kolom: business_date, gross_sales, discounts, refunds, net_sales, tax, service_charge, cash_sales, qris_sales, other_sales, expenses, cogs, gross_profit, net_profit, transaction_count.
+
+T. SYNC_QUEUE
+
+Kolom: operation_id, device_id, local_transaction_id, operation_type, payload_json, status, retry_count, created_at, synced_at, error_message.
+
+U. REFUNDS
+
+Kolom: refund_id, transaction_id, refund_number, amount, reason, status, approved_by, created_by, created_at.
+
+Buat ID unik untuk semua data. Jangan menggunakan nomor baris Spreadsheet sebagai identitas permanen.
+
+Semua transaksi harus menyimpan snapshot nama produk, harga, dan biaya pada saat transaksi agar perubahan harga di masa depan tidak mengubah laporan historis.
+
+Gunakan formula hanya untuk ringkasan yang sesuai. Logika transaksi penting harus diproses dan divalidasi di backend.
+
+6. SISTEM LOGIN DAN HAK AKSES
+
+Sediakan dua role utama.
+
+ADMIN
+
+Admin memiliki akses:
+
+Dashboard seluruh bisnis.
+Manajemen pengguna.
+Manajemen produk, kategori, harga, foto, barcode, dan varian.
+Manajemen stok, resep, dan bahan baku.
+Manajemen pemasok dan pembelian.
+Semua transaksi dan riwayat pembayaran.
+Pembukuan, pengeluaran, dan laporan keuangan.
+Pengaturan pajak dan service charge.
+Pengaturan QRIS dan integrasi pembayaran.
+Pengaturan printer dan struk.
+Pengaturan database, sinkronisasi, backup, serta ekspor data.
+Audit log dan pembatalan/refund sesuai otorisasi.
+Pengelolaan shift dan kas.
+KASIR
+
+Kasir hanya dapat:
+
+Login ke akun sendiri.
+Membuka dan menutup shift.
+Melihat menu aktif dan harga jual.
+Membuat transaksi penjualan.
+Mengubah jumlah item sebelum pembayaran selesai.
+Memindai barcode.
+Memilih metode pembayaran yang diizinkan.
+Memproses pembayaran sesuai integrasi yang tersedia.
+Mencetak atau membagikan struk.
+Melihat transaksi miliknya sesuai pengaturan.
+Mengajukan pembatalan atau refund untuk persetujuan Admin.
+Melihat ringkasan shift sendiri.
+
+Kasir tidak boleh mengubah harga produk, menghapus transaksi, mengubah laporan keuangan, mengelola akun pengguna, atau membuka pengaturan sensitif.
+
+Terapkan otorisasi pada backend untuk setiap operasi, bukan sekadar menyembunyikan tombol pada frontend.
+
+7. DESAIN ANTARMUKA
+
+Gunakan tampilan profesional dengan gaya modern, bersih, minimalis, dan nyaman digunakan dalam operasional kafe.
+
+Desain:
+
+Warna dasar putih atau krem.
+Aksen cokelat kopi atau hijau gelap.
+Teks yang mudah dibaca.
+Tombol transaksi besar dan jelas.
+Kartu menu dengan foto.
+Ikon sederhana.
+Animasi minimal.
+Responsif pada HP, tablet, laptop, dan desktop.
+Mendukung navigasi sentuh maupun mouse.
+Hindari elemen visual yang berat dan berlebihan.
+
+Sidebar untuk desktop dan navigasi ringkas untuk perangkat mobile.
+
+Halaman utama:
+
+Login.
+Setup awal.
+Dashboard.
+Kasir/POS.
+Menu dan produk.
+Kategori.
+Barcode.
+Stok dan bahan baku.
+Pembelian dan pemasok.
+Riwayat transaksi.
+Pembayaran QRIS.
+Pengeluaran.
+Kas dan shift.
+Pembukuan.
+Laporan.
+Manajemen pengguna.
+Pengaturan.
+Backup dan sinkronisasi.
+8. HALAMAN POS / KASIR
+
+Ini adalah fitur utama aplikasi dan harus sangat cepat.
+
+Layout desktop:
+
+Kiri: kategori dan daftar menu.
+Tengah: grid kartu produk dengan foto, nama, dan harga.
+Kanan: keranjang pesanan, jumlah item, diskon, pajak, service charge, dan total pembayaran.
+
+Layout mobile:
+
+Menu dalam grid responsif.
+Keranjang dapat dibuka melalui panel atau halaman khusus.
+Tombol pembayaran selalu mudah dijangkau.
+
+Fitur POS:
+
+Pencarian produk instan.
+Filter kategori.
+Foto produk.
+Pilih varian, ukuran, dan topping.
+Tambah atau kurangi jumlah.
+Catatan khusus pesanan.
+Diskon item dan diskon transaksi sesuai izin.
+Perhitungan pajak dan service charge sesuai pengaturan.
+Nomor invoice otomatis dan unik.
+Simpan pesanan sementara.
+Batalkan item sebelum pembayaran.
+Tahan pesanan dan lanjutkan kembali.
+Pilih dine-in, takeaway, atau delivery.
+Nomor meja dan nomor pesanan.
+Tombol checkout yang jelas.
+Pencegahan klik pembayaran ganda.
+Konfirmasi sebelum menyelesaikan transaksi.
+Pencetakan struk setelah transaksi berhasil.
+
+Sediakan metode harga yang benar: harga, diskon, pajak, dan total harus konsisten pada tampilan, database, struk, dan laporan.
+
+9. FOTO MENU DAN PENGELOLAAN PRODUK
+
+Admin dapat mengelola semua produk langsung melalui aplikasi.
+
+Fitur:
+
+Tambah produk.
+Edit produk.
+Nonaktifkan produk.
+Unggah foto dari kamera atau galeri.
+Pratinjau foto sebelum disimpan.
+Kompres dan ubah ukuran foto otomatis.
+Simpan foto ke Google Drive.
+Simpan URL atau referensi file pada database.
+Input nama, deskripsi, kategori, harga beli, harga jual, stok, satuan, SKU, dan barcode.
+Tambah ukuran dan varian.
+Atur topping dan tambahan harga.
+Duplikasi produk.
+Impor dan ekspor CSV.
+Pencarian dan filter.
+Peringatan harga jual di bawah biaya pokok.
+Validasi data wajib.
+
+Foto harus dikompres agar aplikasi ringan dan hemat kuota. Jika upload gagal, jangan menyimpan produk dalam status seolah-olah seluruh proses berhasil.
+
+Jika AI digunakan untuk membantu mengenali foto menu, hasilnya harus menjadi saran yang bisa diperiksa dan diedit Admin, bukan otomatis dianggap sebagai data harga yang benar.
+
+10. BARCODE DAN LABEL PRODUK
+
+Implementasikan:
+
+Pembuatan barcode internal otomatis untuk produk.
+Input barcode dari scanner USB/Bluetooth.
+Scan melalui kamera perangkat yang mendukung.
+Pencarian produk berdasarkan barcode atau SKU.
+Penambahan item otomatis ke keranjang saat barcode valid dipindai.
+Validasi barcode duplikat.
+Pencetakan label produk.
+Pilihan format barcode yang kompatibel dengan scanner umum, misalnya Code 128.
+Dukungan EAN-13 jika diperlukan dan nomor kode memenuhi aturan validasi.
+Pengaturan ukuran label dan jumlah cetak.
+
+Scanner USB/Bluetooth yang berfungsi sebagai keyboard harus dapat digunakan tanpa konfigurasi khusus yang rumit.
+
+Jangan menggunakan barcode internal sebagai bukti pembayaran. Barcode produk berbeda dari QRIS pembayaran.
+
+11. PEMBAYARAN QRIS
+
+Bangun modul pembayaran yang siap diintegrasikan dengan penyedia pembayaran resmi yang mendukung QRIS.
+
+Dukung dua mode.
+
+A. QRIS Statis
+Admin dapat memasukkan informasi QRIS resmi milik bisnis.
+Tampilkan QRIS pada layar pembayaran.
+Tampilkan total transaksi secara jelas.
+Kasir menunggu pelanggan membayar.
+Kasir melakukan konfirmasi sesuai prosedur.
+Tandai transaksi sebagai pembayaran manual terverifikasi, bukan otomatis terverifikasi oleh bank.
+Catat pengguna yang melakukan konfirmasi.
+
+Jangan mengubah status menjadi pembayaran otomatis berhasil hanya karena pelanggan memindai QR atau mengunggah tangkapan layar.
+
+B. QRIS Dinamis
+Admin mengisi kredensial penyedia pembayaran melalui mekanisme rahasia backend.
+Backend meminta pembuatan transaksi QRIS sesuai dokumentasi resmi penyedia.
+QRIS dan nominal dibuat untuk transaksi yang sesuai.
+Simpan ID transaksi eksternal.
+Tampilkan status menunggu pembayaran.
+Verifikasi status menggunakan webhook yang sah atau API status transaksi resmi.
+Validasi signature, nominal, merchant, reference ID, dan status.
+Proses callback secara idempoten.
+Cegah transaksi dibayar atau dicatat dua kali.
+Simpan waktu dan referensi pembayaran.
+Tangani pending, berhasil, gagal, kedaluwarsa, dan refund.
+Sediakan polling status sebagai fallback yang sesuai.
+Jangan mempercayai redirect browser pelanggan sebagai satu-satunya bukti pembayaran.
+
+Pisahkan status pesanan dan status pembayaran.
+
+Jika integrasi resmi belum dikonfigurasi, tampilkan mode DEMO dengan label yang jelas. Mode demo tidak boleh mencatat pembayaran palsu sebagai transaksi nyata yang telah terverifikasi.
+
+Jangan membuat QR acak yang diklaim sebagai QRIS sah.
+
+12. METODE PEMBAYARAN LAIN
+
+Dukung:
+
+Tunai.
+QRIS statis.
+QRIS dinamis.
+Debit/kredit melalui penyedia pembayaran jika tersedia.
+Transfer bank dengan verifikasi sesuai prosedur.
+E-wallet melalui integrasi resmi jika tersedia.
+Pembayaran campuran jika diperlukan.
+
+Untuk pembayaran tunai:
+
+Input jumlah uang pelanggan.
+Hitung kembalian otomatis.
+Tolak nominal yang tidak mencukupi.
+Sediakan tombol nominal cepat.
+
+Untuk pembayaran campuran:
+
+Catat setiap metode pembayaran sebagai entri terpisah.
+Total semua pembayaran harus sama dengan jumlah yang wajib dibayar.
+Validasi sebelum transaksi diselesaikan.
+13. STRUK DAN PRINTER
+
+Sediakan struk dengan:
+
+Logo dan nama kafe.
+Alamat dan nomor telepon.
+Nomor invoice.
+Tanggal dan waktu.
+Nama kasir.
+Nomor meja atau tipe pesanan.
+Daftar produk.
+Varian dan catatan.
+Kuantitas.
+Harga satuan.
+Diskon.
+Pajak dan service charge.
+Total.
+Rincian metode pembayaran.
+Jumlah uang tunai dan kembalian jika relevan.
+Pesan penutup.
+
+Dukung:
+
+Printer thermal 58 mm.
+Printer thermal 80 mm.
+Print browser pada PC.
+Opsi koneksi printer Bluetooth/USB pada Android melalui metode yang benar-benar didukung.
+Cetak ulang dengan penanda "SALINAN".
+Ekspor atau berbagi struk dalam PDF jika memungkinkan.
+
+Jangan mengklaim dukungan langsung ke semua printer Bluetooth tanpa pengujian. Sediakan konfigurasi sesuai kemampuan perangkat.
+
+14. STOK, BAHAN BAKU, DAN RESEP
+
+Bangun manajemen inventori yang terhubung dengan penjualan.
+
+Dukungan:
+
+Stok produk jadi.
+Stok bahan baku.
+Satuan kg, gram, liter, ml, pcs, dan satuan khusus.
+Konversi satuan yang valid.
+Resep per menu.
+Pengurangan bahan baku berdasarkan jumlah menu terjual.
+Pengurangan stok produk jadi jika menggunakan model stok produk.
+Penerimaan barang.
+Penyesuaian stok.
+Stok opname.
+Retur pembelian.
+Peringatan stok minimum.
+Riwayat pergerakan stok.
+Harga pokok bahan baku.
+Pengaturan apakah stok negatif diperbolehkan.
+
+Gunakan satu metode stok yang jelas per produk. Jangan mengurangi stok produk jadi sekaligus mengurangi bahan baku untuk produk yang sama kecuali model inventori memang mengharuskannya.
+
+Semua perubahan stok harus tercatat sebagai stock movement dengan referensi transaksi.
+
+15. PEMBUKUAN DAN LAPORAN KEUANGAN
+
+Sediakan pembukuan otomatis yang mengambil data dari transaksi terverifikasi.
+
+Laporan penjualan
+Hari ini.
+Kemarin.
+Minggu ini.
+Bulan ini.
+Tahun ini.
+Rentang tanggal khusus.
+Penjualan per produk.
+Penjualan per kategori.
+Penjualan per kasir.
+Penjualan per jam.
+Penjualan per metode pembayaran.
+Produk terlaris.
+Produk dengan penjualan terendah.
+Jumlah transaksi.
+Rata-rata nilai transaksi.
+Laporan keuangan
+Pendapatan penjualan.
+Diskon.
+Refund.
+Pajak yang dipungut.
+Service charge.
+Harga pokok penjualan (HPP/COGS).
+Laba kotor.
+Biaya operasional.
+Laba atau rugi operasional.
+Arus kas.
+Ringkasan kas harian.
+Selisih kas.
+Hutang pembelian jika modul hutang diaktifkan.
+Rekap metode pembayaran.
+
+Gunakan rumus yang konsisten:
+
+Penjualan bersih = penjualan setelah diskon dan refund, dengan perlakuan pajak yang dikonfigurasi secara konsisten.
+HPP = biaya pokok produk yang benar-benar terjual, menggunakan metode biaya yang ditetapkan.
+Laba kotor = penjualan bersih sebelum pajak yang dipungut untuk pemerintah, dikurangi HPP.
+Laba operasional = laba kotor ditambah pendapatan operasional lain dan dikurangi biaya operasional.
+Pajak yang dipungut harus dilaporkan terpisah dari pendapatan apabila perlakuan akuntansinya mengharuskan demikian.
+
+Tampilkan asumsi perhitungan dengan jelas. Jangan menganggap omzet sama dengan laba.
+
+Sediakan:
+
+Grafik harian dan bulanan.
+Filter tanggal.
+Ekspor Excel/CSV.
+Laporan PDF jika memungkinkan.
+Cetak laporan.
+Ringkasan otomatis dari data yang benar-benar tersedia.
+
+Jangan menghitung HPP dari harga jual. Jika biaya produk belum diisi, tampilkan laporan HPP/laba sebagai belum lengkap dan beri peringatan.
+
+16. KAS DAN SHIFT KASIR
+
+Implementasikan:
+
+Buka shift.
+Input modal awal.
+Catat kas masuk dan keluar.
+Penjualan tunai per shift.
+Penarikan kas.
+Pengeluaran dari laci kas.
+Tutup shift.
+Hitung kas yang seharusnya tersedia.
+Input kas fisik hasil penghitungan.
+Hitung selisih.
+Catat alasan selisih.
+Persetujuan Admin jika dibutuhkan.
+Laporan per kasir dan per shift.
+
+Uang tunai, saldo QRIS, dan metode pembayaran non-tunai harus dipisahkan dalam laporan.
+
+17. PENGELUARAN, PEMBELIAN, DAN PEMASOK
+
+Sediakan modul untuk:
+
+Biaya listrik.
+Air.
+Internet.
+Gaji.
+Sewa.
+Bahan baku.
+Peralatan.
+Biaya operasional lainnya.
+Upload bukti atau foto nota.
+Kategori biaya.
+Pencatatan tanggal dan pengguna.
+Pembelian dari pemasok.
+Penerimaan barang.
+Riwayat harga beli.
+Hutang pemasok jika diaktifkan.
+Status pembayaran pembelian.
+
+Bedakan pembelian bahan baku, biaya operasional, dan pembelian aset agar laporan tidak menghitung biaya dua kali.
+
+18. PEMBATALAN DAN REFUND
+Transaksi yang sudah selesai tidak boleh dihapus secara permanen melalui operasi biasa.
+Pembatalan sebelum pembayaran harus memiliki status yang jelas.
+Refund memerlukan alasan.
+Refund yang membutuhkan persetujuan harus diverifikasi Admin.
+Catat siapa yang meminta, menyetujui, dan memproses refund.
+Integrasikan refund pembayaran dengan penyedia resmi bila didukung.
+Refund manual tidak boleh dianggap sebagai pengembalian dana elektronik otomatis.
+Catat dampak refund terhadap laporan, stok, dan kas.
+Semua perubahan harus masuk AUDIT_LOG.
+19. MODE OFFLINE DAN SINKRONISASI
+
+Aplikasi harus tetap dapat membuka menu yang sudah tersimpan secara lokal ketika koneksi internet terputus.
+
+Implementasikan:
+
+Cache produk dan pengaturan yang diperlukan.
+Antrean transaksi offline.
+ID unik lokal untuk setiap transaksi.
+Sinkronisasi otomatis ketika koneksi kembali.
+Status menunggu sinkronisasi.
+Penanganan kegagalan dan retry.
+Deteksi transaksi duplikat.
+Pencatatan konflik data.
+Indikator online/offline.
+Tombol sinkronisasi manual.
+
+Jangan menyatakan pembayaran QRIS online telah berhasil ketika aplikasi offline. Pembayaran online harus menunggu verifikasi resmi.
+
+Karena Google Sheets bukan database transaksional penuh, buat penguncian dan idempotensi di backend serta batasan operasional untuk beberapa kasir yang bekerja bersamaan. Jika kebutuhan bisnis melampaui kemampuan tersebut, jelaskan opsi migrasi ke database transaksional.
+
+20. KEAMANAN DAN AUDIT
+Gunakan HTTPS.
+Validasi semua input di frontend dan backend.
+Terapkan autentikasi dan otorisasi per role.
+Jangan menyimpan password plaintext.
+Jangan menyimpan kredensial sensitif pada localStorage atau Spreadsheet yang dapat dibaca pengguna.
+Gunakan session/token yang memiliki masa berlaku dan mekanisme pencabutan.
+Terapkan rate limiting yang sesuai.
+Cegah manipulasi harga, total transaksi, dan status pembayaran dari frontend.
+Backend menghitung ulang total transaksi.
+Cegah IDOR, replay request, dan transaksi ganda.
+Catat aktivitas penting dalam AUDIT_LOG.
+Jangan mencatat password atau token rahasia ke log.
+Sediakan backup berkala.
+Terapkan prosedur pemulihan data dan verifikasi integritas.
+Berikan peringatan ketika koneksi atau sinkronisasi gagal.
+21. KINERJA DAN OPTIMASI
+
+Prioritaskan aplikasi yang ringan.
+
+Hindari library besar yang tidak diperlukan.
+Gunakan lazy loading halaman.
+Kompres gambar.
+Gunakan pagination pada tabel panjang.
+Batasi permintaan data.
+Gunakan cache lokal dengan strategi invalidasi yang jelas.
+Hindari membaca seluruh Spreadsheet pada setiap klik.
+Buat endpoint khusus untuk pencarian produk, transaksi, dan laporan.
+Gunakan batch read/write.
+Gunakan debounce pencarian.
+Kurangi render ulang yang tidak diperlukan.
+Gunakan pagination pada riwayat transaksi.
+Jangan membuat satu request API untuk setiap baris produk.
+Buat indikator loading dan error yang jelas.
+Jangan menyimpan foto dalam sel Spreadsheet.
+Jangan mengandalkan formula seluruh kolom secara berlebihan.
+
+Tetapkan sasaran awal pengujian: interaksi POS lokal terasa responsif, pencarian produk cepat, dan halaman utama tidak mengunduh seluruh riwayat transaksi. Ukur kinerja pada perangkat nyata dan sesuaikan target berdasarkan hasil pengujian.
+
+22. ANDROID APK DAN WINDOWS
+
+Bangun satu basis kode frontend yang dapat digunakan kembali.
+
+Android
+Aplikasi web harus responsif dan dapat dipasang sebagai PWA.
+Sediakan jalur build APK melalui Capacitor jika plugin kamera, printer, file system, atau integrasi perangkat diperlukan.
+Siapkan konfigurasi build Android, ikon, splash screen, nama paket, dan izin perangkat yang diperlukan.
+Jangan meminta izin yang tidak digunakan.
+Sediakan panduan build APK debug dan release.
+Jelaskan proses signing APK/AAB untuk distribusi.
+Uji kamera, penyimpanan, koneksi, navigasi, dan printer pada perangkat nyata.
+Windows
+Sediakan aplikasi web/PWA yang dapat berjalan di browser modern.
+Sediakan opsi build desktop menggunakan Tauri atau Electron jika diperlukan.
+Pilih solusi desktop yang paling ringan dan kompatibel dengan kebutuhan printer.
+Sediakan konfigurasi build installer Windows.
+Dukung keyboard, mouse, scanner barcode USB, dan printer yang kompatibel.
+Pastikan database dan konfigurasi tidak terikat pada path lokal tertentu.
+Sediakan panduan instalasi dan update.
+
+Jangan mengklaim APK atau installer sudah tersedia jika file belum benar-benar berhasil dibangun. Jika lingkungan AI Studio hanya menghasilkan kode, berikan seluruh source code dan langkah build yang dapat dijalankan.
+
+23. PENGUJIAN WAJIB
+
+Buat data demo yang terpisah dari produksi.
+
+Uji skenario berikut:
+
+Setup otomatis Spreadsheet baru.
+Pembuatan Admin pertama.
+Login Admin dan Kasir.
+Penolakan akses ketika Kasir mencoba mengubah harga.
+Input produk beserta foto.
+Pembuatan dan scan barcode.
+Penjualan satu produk.
+Penjualan banyak produk.
+Pembayaran tunai dan kembalian.
+QRIS statis dengan konfirmasi manual.
+QRIS dinamis melalui sandbox penyedia resmi.
+Webhook pembayaran yang valid dan tidak valid.
+Pencegahan pembayaran ganda.
+Pengurangan stok.
+Penghitungan resep dan bahan baku.
+Pencatatan pengeluaran.
+Pembukaan dan penutupan shift.
+Refund.
+Laporan penjualan dan laba.
+Koneksi terputus dan sinkronisasi ulang.
+Dua kasir melakukan transaksi hampir bersamaan.
+Backup dan pemulihan.
+Pengujian responsif pada Android dan Windows.
+Penanganan error API, upload foto, dan printer.
+
+Jangan menandai pengujian lulus tanpa benar-benar menjalankan atau memverifikasi skenario tersebut. Bedakan hasil yang sudah diuji, yang masih simulasi, dan yang memerlukan konfigurasi eksternal.
+
+24. HASIL YANG WAJIB DIBUAT
+
+Kerjakan secara bertahap dan hasilkan:
+
+Source code frontend lengkap.
+Source code backend Google Apps Script lengkap.
+Struktur file proyek yang jelas.
+Skrip setup otomatis Google Spreadsheet.
+Fungsi pembuatan folder Google Drive.
+Fungsi autentikasi dan otorisasi.
+Semua halaman Admin dan Kasir.
+Modul POS dan checkout.
+Modul produk, foto, varian, dan barcode.
+Modul pembayaran dan QRIS.
+Modul stok dan resep.
+Modul pembukuan dan laporan.
+Modul shift, pengeluaran, pembelian, dan refund.
+Modul sinkronisasi offline.
+File konfigurasi contoh tanpa rahasia.
+File .env.example jika diperlukan.
+Panduan instalasi dan deployment.
+Panduan menghubungkan Google Spreadsheet.
+Panduan integrasi penyedia QRIS.
+Panduan build APK Android.
+Panduan build aplikasi Windows.
+Panduan backup dan pemulihan.
+Checklist pengujian.
+Daftar keterbatasan dan pekerjaan yang belum selesai.
+25. CARA PENGERJAAN
+
+Jangan mencoba membuat semua kode dalam satu file raksasa.
+
+Kerjakan secara berurutan:
+
+FASE 1 — Rancang arsitektur, struktur folder, skema database, dan alur keamanan.
+
+FASE 2 — Buat backend Google Apps Script, setup database otomatis, autentikasi, otorisasi, dan API dasar.
+
+FASE 3 — Buat frontend, login, dashboard, layout responsif, dan navigasi role.
+
+FASE 4 — Buat produk, foto, kategori, varian, barcode, dan POS.
+
+FASE 5 — Buat checkout, pembayaran tunai, QRIS, struk, dan printer.
+
+FASE 6 — Buat stok, resep, pembelian, pemasok, dan pengeluaran.
+
+FASE 7 — Buat shift kasir, pembukuan, laporan, refund, dan audit log.
+
+FASE 8 — Buat mode offline, sinkronisasi, dan perlindungan transaksi ganda.
+
+FASE 9 — Lakukan pengujian, perbaikan, optimasi, dan dokumentasi.
+
+FASE 10 — Siapkan build Android dan Windows.
+
+Pada setiap fase:
+
+Tampilkan file yang dibuat.
+Berikan kode lengkap yang diperlukan.
+Pastikan integrasi dengan fase sebelumnya.
+Periksa kesalahan tipe, impor, konfigurasi, dan alur data.
+Jangan menghapus fitur yang sudah bekerja hanya untuk menyederhanakan implementasi.
+Jangan mengganti fitur yang diminta dengan tombol kosong atau data statis.
+Jika konteks atau batas keluaran tidak mencukupi, berhenti pada titik yang jelas, rangkum progres, dan lanjutkan dari file berikutnya pada respons berikutnya.
+26. KRITERIA SELESAI
+
+Aplikasi baru dianggap siap untuk uji coba operasional ketika:
+
+Database berhasil dibuat otomatis.
+Admin dan Kasir memiliki akses berbeda.
+Produk dapat dikelola melalui aplikasi.
+Transaksi benar-benar tersimpan.
+Pembayaran dan statusnya tercatat dengan benar.
+Stok dan laporan konsisten dengan transaksi.
+Pembukuan tidak menghitung pendapatan atau biaya dua kali.
+Tidak ada transaksi ganda akibat klik berulang atau sinkronisasi ulang.
+Data tetap dapat dipulihkan dari backup.
+Aplikasi berjalan dengan baik di Android dan Windows melalui target build yang dipilih.
+Seluruh keterbatasan dan integrasi yang belum aktif didokumentasikan.
+
+Mulai sekarang dengan FASE 1. Jelaskan arsitektur yang dipilih, struktur folder proyek, skema database, alur setup otomatis Google Spreadsheet, dan desain keamanan. Setelah itu implementasikan proyek secara bertahap sampai seluruh fase selesai.
+
+Utamakan kode yang benar-benar berfungsi, keamanan, akurasi transaksi, kemudahan penggunaan, dan performa ringan daripada sekadar menghasilkan tampilan yang menarik.

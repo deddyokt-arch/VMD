@@ -1,0 +1,7 @@
+{
+  "name": "MartVai Pro — Kasir Supermarket & Swalayan Terintegrasi",
+  "description": "Aplikasi Kasir Supermarket, Swalayan & Minimarket Terintegrasi Barcode Scanner, Stok Rak, Pembukuan, Integrasi Google Sheets & QRIS, dan Laporan Keuangan.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

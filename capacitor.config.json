@@ -1,0 +1,16 @@
+{
+  "appId": "id.vaicafe.pos",
+  "appName": "VaiCafe POS",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#2D1B14",
+      "showSpinner": false
+    }
+  }
+}
