@@ -15,7 +15,7 @@ const SUPERADMIN_MFA_KEY = 'vaicafe_superadmin_mfa_verified';
 
 // Expected SHA-256 hash for Superadmin password
 export const SUPERADMIN_USERNAME = 'DiVailean';
-export const SUPERADMIN_PASS_HASH = 'e82faef81543edca2bd02d08a543ec865be9f70d24c0ef550f214f7d4323c914';
+export const SUPERADMIN_PASS_HASH = 'bba1c57d29191af4e22f309d5c81b108fad20112fa37deebba681886e84a7c5d';
 
 export function getStoredUser(): User | null {
   try {
